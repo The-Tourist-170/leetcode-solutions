@@ -1,43 +1,29 @@
-class Solution {
-    public int sumSubarrayMins(int[] arr) {
-        int result = 0;
-        // for(int i=0; i < arr.length; i++){
-        //     for(int j = 0; j < arr.length;j++){
-        //         if (j+i < arr.length)
-        //             result += findMin(arr, j, j+i); 
-        //             result = result%1_000_000_007;
-        //     }
-        // }
-        int n = arr.length;
-        int[] localSum = new int[n];
-        int span = 0;
-        Stack<Pair<Integer, Integer>> ms = new Stack<>();
-        
-        for (int i =0; i<n; i++){
-            while (!ms.empty() && ms.peek().getKey() >= arr[i])
-                ms.pop();
+class Solution{
 
-            if(!ms.empty()){
-                span = i - ms.peek().getValue();
-                localSum[i] = localSum[ms.peek().getValue()];
-            } else {
-                span = i+1;
-            }
-            localSum[i] = (localSum[i]+span * arr[i])%1_000_000_007;
-            result += localSum[i];
-            result %= 1_000_000_007;
-            ms.push(new Pair(arr[i], i));
+    public int M = (int) 1e9 + 7;
+    public int sumSubarrayMins(int[] arr) {
+        int n = arr.length;
+        int[] left = new int[n], right = new int[n];
+        Deque<Integer> q = new ArrayDeque<>(); // store index
+        q.offer(-1);
+        for (int i = 0; i < n; i++) {
+            while (q.peekLast() != -1 && arr[q.peekLast()] >= arr[i]) q.pollLast();
+            left[i] = i - q.peekLast();
+            q.offer(i);
         }
-        
-        return result;
-    }
-    
-    public int findMin(int[] arr, int start, int end){
-        int result = Integer.MAX_VALUE;
-        for (int i= start; i <= end; i++){
-            result = Math.min(result, arr[i]);
+
+        q.clear();
+        q.offer(n);
+        for (int i = n - 1; i >= 0; i--) {
+            while (q.peekLast() != n && arr[q.peekLast()] > arr[i]) q.pollLast();
+            right[i] = q.peekLast() - i;
+            q.offer(i);
         }
-        
-        return result;
+
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            res = (res + 1L * left[i] * right[i] * arr[i]) % M;
+        }
+        return (int) res;
     }
 }
