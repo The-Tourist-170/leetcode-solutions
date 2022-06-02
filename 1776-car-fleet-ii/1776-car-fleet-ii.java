@@ -1,28 +1,26 @@
 class Solution {
-    // refrence video link : https://youtu.be/SVW1bD_PN6A
-    public double[] getCollisionTimes(int[][] cars) {
-        int n = cars.length;
-        double[] res = new double[n];
-        Arrays.fill(res, -1);       // no collision then -1 collision time
+    
+    public double[] getCollisionTimes(int[][] c) {
+         
+        int n = c.length;
+        double[] ans = new double[n];
+        Stack<Integer> st = new Stack<>();
+        Arrays.fill(ans, -1);
         
-        Stack<Integer> stack = new Stack<>(); // to store indices 
-        
-        for(int i=n-1; i>=0; i--){
-            while(!stack.isEmpty() && cars[i][1] <= cars[stack.peek()][1])
-                stack.pop();
+        for(int i = n - 1; i >= 0; i--){
+            while(!st.isEmpty() && c[i][1] <= c[st.peek()][1])
+                st.pop();
             
-            while(!stack.isEmpty()){
-                double collisionTime = ( cars[i][0] - cars[stack.peek()][0] ) / (double) (cars[stack.peek()][1] - cars[i][1]);  // distance / relative speed
-                if(collisionTime <= res[stack.peek()] || res[stack.peek()] == -1){              // actual collision time
-                    res[i] = collisionTime;
+            while(!st.isEmpty()){
+                double cT = (c[st.peek()][0] - c[i][0]) / (double)(c[i][1] - c[st.peek()][1]);
+                if(cT <= ans[st.peek()] || ans[st.peek()] == -1){
+                    ans[i] = cT;
                     break;
                 }
-                stack.pop();
+                st.pop();
             }
-            
-            stack.push(i);
+            st.push(i);
         }
-        
-        return res;
+        return ans;
     }
 }
